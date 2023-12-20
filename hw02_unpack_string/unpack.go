@@ -12,7 +12,6 @@ import (
 var ErrInvalidString = errors.New("invalid string")
 
 func Unpack(str string) (string, error) {
-
 	if str == "" || str == " " {
 		return "", nil
 	}
@@ -21,10 +20,10 @@ func Unpack(str string) (string, error) {
 		return "", ErrInvalidString
 	}
 	var sb strings.Builder
-	var replace_str string
+	var replaceStr string
 
 	for i, char := range str {
-		replace_str = ""
+		replaceStr = ""
 		if char == 48 {
 			s := sb.String()
 			s = s[:len(s)-1]
@@ -32,10 +31,8 @@ func Unpack(str string) (string, error) {
 			sb.WriteString(s)
 
 			fmt.Println(sb.String())
-
 		}
 		if str[i] < 58 && str[i] > 48 {
-
 			if i+1 != len(str) && str[i+1] < 58 && str[i+1] > 47 {
 				return "", ErrInvalidString
 			}
@@ -43,19 +40,15 @@ func Unpack(str string) (string, error) {
 			if err != nil {
 				return "", errors.New("can't converted char to int")
 			}
-			replace_str = strings.Repeat(string(str[i-1]), count-1)
+			replaceStr = strings.Repeat(string(str[i-1]), count-1)
 		}
 
-		if replace_str != "" {
-			sb.WriteString(replace_str)
-		} else {
-			if char != 48 {
-				sb.WriteRune(char)
-			}
+		if replaceStr != "" {
+			sb.WriteString(replaceStr)
+		} else if char != 48 {
+			sb.WriteRune(char)
 		}
-
 	}
 
-	fmt.Println(sb.String())
 	return sb.String(), nil
 }
