@@ -1,4 +1,4 @@
-module github.com/alanamik/hw01_hello_otus
+module github.com/alanamik/OTUS_hws/hw01_hello_otus
 
 go 1.20
 
