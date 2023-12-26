@@ -7,8 +7,6 @@ import (
 )
 
 func main() {
-
 	greeting := "Hello, OTUS!"
-	fmt.Println(greeting)
 	fmt.Println(reverse.String(greeting))
 }
