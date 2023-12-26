@@ -1,4 +1,4 @@
-module github.com/alanamik/hw03_frequency_analysis
+module github.com/alanamik/OTUS_hws/hw03_frequency_analysis
 
 go 1.19
 
