@@ -1,12 +1,9 @@
-package copy
+package hw07filecopying
 
 import (
 	"errors"
 	"io"
-	"io/ioutil"
-	"net/http"
 	"os"
-	"strings"
 
 	pb "github.com/cheggaaa/pb/v3"
 )
@@ -30,12 +27,6 @@ func Copy(fromPath, toPath string, offset, limit int64) error {
 			err = cerr
 		}
 	}()
-
-	r, err := ioutil.ReadFile(fromPath)
-	type_ := http.DetectContentType(r)
-	if !strings.Contains(type_, "text/plain") {
-		return ErrUnsupportedFile
-	}
 
 	stat, err := in.Stat()
 	size := stat.Size()
@@ -79,7 +70,7 @@ func Copy(fromPath, toPath string, offset, limit int64) error {
 			return err
 		}
 		_, err := io.CopyN(out, barReader, limit)
-		if err != nil && err != io.EOF {
+		if err != nil && !errors.Is(err, io.EOF) {
 			return err
 		}
 		return nil

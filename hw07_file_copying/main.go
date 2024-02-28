@@ -1,9 +1,9 @@
 package main
 
 import (
-	copy "OTUS_hws/alanamik/hw07_file_copying/cop"
 	"flag"
-	"fmt"
+
+	hw07filecopying "OTUS_hws/alanamik/hw07_file_copying/copydd"
 )
 
 var (
@@ -20,6 +20,5 @@ func init() {
 
 func main() {
 	flag.Parse()
-	fmt.Println(from, to, offset, limit)
-	copy.Copy(from, to, offset, limit)
+	hw07filecopying.Copy(from, to, offset, limit)
 }
