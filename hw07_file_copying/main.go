@@ -1,7 +1,9 @@
 package main
 
 import (
+	copy "OTUS_hws/alanamik/hw07_file_copying/cop"
 	"flag"
+	"fmt"
 )
 
 var (
@@ -17,10 +19,7 @@ func init() {
 }
 
 func main() {
-	//	flag.Parse()
-	from := "testdata/input.txt"
-	to := "out.txt"
-	//limit:= 10
-	Copy(from, to, 0, 0)
-	//hw07_file_copying.Copy(from, to, offset, limit)
+	flag.Parse()
+	fmt.Println(from, to, offset, limit)
+	copy.Copy(from, to, offset, limit)
 }
