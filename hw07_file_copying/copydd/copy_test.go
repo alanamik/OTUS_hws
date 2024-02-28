@@ -9,7 +9,6 @@ import (
 )
 
 func TestCopy(t *testing.T) {
-	os.Chdir("..")
 	t.Run("invalid_from_path", func(t *testing.T) {
 		require.EqualError(t, Copy("/test", "", 0, 0), ErrInvalidPath.Error())
 	})
