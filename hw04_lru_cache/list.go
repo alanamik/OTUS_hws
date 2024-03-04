@@ -1,7 +1,5 @@
 package hw04lrucache
 
-import "fmt"
-
 type List interface {
 	Len() int
 	Front() *ListItem
@@ -9,6 +7,7 @@ type List interface {
 	PushFront(v interface{}) *ListItem
 	PushBack(v interface{}) *ListItem
 	Remove(i *ListItem)
+	RemoveAll()
 	MoveToFront(i *ListItem)
 }
 
@@ -19,42 +18,32 @@ type ListItem struct {
 }
 
 type list struct {
-	//List // Remove me after realization.
-	// Place your code here.
-	lenght int
+	length int
 	tail   *ListItem
 	head   *ListItem
 }
 
-func NewList() List {
+func NewList() *list {
 	l := &list{}
 	l.head = nil
 	l.tail = nil
-	l.lenght = 0
+	l.length = 0
 	return l
 }
 
-func (l list) Len() int {
-	return l.lenght
+func (l *list) Len() int {
+	return l.length
 }
 
-// - Len() int                           // длина списка
-// - Front() *ListItem                   // первый элемент списка
-// - Back() *ListItem                    // последний элемент списка
-// - PushFront(v interface{}) *ListItem  // добавить значение в начало
-// - PushBack(v interface{}) *ListItem   // добавить значение в конец
-// - Remove(i *ListItem)                 // удалить элемент
-// - MoveToFront(i *ListItem)            // переместить элемент в начало
-
-func (l list) Front() *ListItem {
+func (l *list) Front() *ListItem {
 	return l.head
 }
 
-func (l list) Back() *ListItem {
+func (l *list) Back() *ListItem {
 	return l.tail
 }
 
-func (l list) PushFront(v interface{}) *ListItem {
+func (l *list) PushFront(v interface{}) *ListItem {
 	value := v.(int)
 	newItem := &ListItem{
 		Value: value,
@@ -69,18 +58,17 @@ func (l list) PushFront(v interface{}) *ListItem {
 		l.head.Prev = newItem
 		l.head = newItem
 	}
-	l.lenght++
+	l.length++
 	return newItem
 }
 
-func (l list) PushBack(v interface{}) *ListItem {
+func (l *list) PushBack(v interface{}) *ListItem {
 	value := v.(int)
 	newItem := &ListItem{
 		Value: value,
 		Next:  nil,
 		Prev:  nil,
 	}
-
 	if l.head == nil {
 		l.head = newItem
 		l.tail = newItem
@@ -93,83 +81,79 @@ func (l list) PushBack(v interface{}) *ListItem {
 		currentItem.Next = newItem
 		l.tail = newItem
 	}
-	l.lenght++
+	l.length++
 	return newItem
 }
 
-func (l list) Remove(i *ListItem) {
-	//if l.head == nil {
-	// When linked list is empty
-	//	fmt.Print("Empty linked list")
-	//}
+func (l *list) Remove(i *ListItem) {
 	if l.head == i {
-		// When remove head
 		l.head = l.head.Next
 		if l.head != nil {
-			l.head.Next = nil
-		} else {
-			// When linked list empty after delete
-			l.tail = nil
+			l.head.Prev = nil
 		}
-	} else if l.tail == i {
-		// When remove last node
+		l.length--
+		return
+	}
+	if l.tail == i {
 		l.tail = l.tail.Prev
 		if l.tail != nil {
 			l.tail.Next = nil
-		} else {
-			// Remove all nodes
-			l.head = nil
 		}
-	} else {
-		// When need to find deleted node
-		var t *ListItem = l.head
-		// Get remove node
-		for t != nil && t != i {
-			t = t.Next
-		}
-		if t == nil {
-			// Node key not exist
-			fmt.Println("Deleted node are not found")
-		} else {
-			// Separating deleted node
-			// And combine next and previous node
-			t.Prev.Next = t.Next
-			if t.Next != nil {
-				// When deleted intermediate nodes
-				t.Next.Prev = t.Prev
-			}
-		}
+		l.length--
+		return
 	}
+	t := l.head.Next
+	for t != nil && t != i {
+		t = t.Next
+	}
+	if t == nil {
+		return
+	}
+	t.Prev.Next = t.Next
+	if t.Next != nil {
+		t.Next.Prev = t.Prev
+	}
+	l.length--
 }
 
-func (l list) MoveToFront(i *ListItem) {
+func (l *list) RemoveAll() {
+	tt := l.head.Next
+	var t *ListItem
+	for tt != l.tail && tt != nil {
+		t = tt.Next
+		l.Remove(tt)
+		tt = t
+	}
+	l.Remove(l.head)
+	l.Remove(l.tail)
+}
+
+func (l *list) MoveToFront(i *ListItem) {
 	if l.tail == i {
-		// When remove last node
+		l.PushFront(i.Value)
 		l.tail = l.tail.Prev
 		if l.tail != nil {
 			l.tail.Next = nil
-		} else {
-			// Remove all nodes
-			l.head = nil
 		}
+		l.length--
+		return
+	}
+	if l.head == i {
+		return
+	}
+	t := l.head.Next
+	for t != nil && t != i {
+		t = t.Next
+	}
+	if t == nil {
+		return
+	}
+	if t.Prev == nil {
+		t.Prev = t.Next
 	} else {
-		// When need to find deleted node
-		var t *ListItem = l.head
-		// Get remove node
-		for t != nil && t != i {
-			t = t.Next
-		}
-		if t == nil {
-			// Node key not exist
-			fmt.Println("Deleted node are not found")
-		} else {
-			// Separating deleted node
-			// And combine next and previous node
-			t.Prev.Next = t.Next
-			if t.Next != nil {
-				// When deleted intermediate nodes
-				t.Next.Prev = t.Prev
-			}
-		}
+		t.Prev.Next = t.Next
+	}
+	if t.Next != nil {
+		t.Next.Prev = t.Prev
 	}
 }
