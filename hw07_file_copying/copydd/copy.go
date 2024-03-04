@@ -48,35 +48,38 @@ func Copy(fromPath, toPath string, offset, limit int64) error {
 		}
 	}()
 
-	bar := pb.Start64(size)
-	barReader := bar.NewProxyReader(in)
-	defer bar.Finish()
-
-	if offset == 0 && limit == 0 {
-		_, err := io.Copy(out, barReader)
-		if err != nil {
-			return err
-		}
-		return nil
-	}
-
 	if stat.Size() > offset && stat.Size() < limit {
 		return ErrOffsetExceedsFileSize
 	}
 
-	if offset >= 0 && limit > 0 {
-		_, err = in.Seek(offset, io.SeekStart)
+	if offset == 0 && limit == 0 {
+		bar := pb.Start64(size)
+		barReader := bar.NewProxyReader(in)
+
+		_, err := io.Copy(out, barReader)
 		if err != nil {
 			return err
 		}
-		_, err := io.CopyN(out, barReader, limit)
-		if err != nil && !errors.Is(err, io.EOF) {
-			return err
-		}
+		bar.Finish()
 		return nil
 	}
 
+	if offset >= 0 && limit > 0 {
+		ret, err := in.Seek(offset, io.SeekStart)
+		if err != nil {
+			return err
+		}
+		bar := pb.Full.Start64(limit - ret)
+		barReader := bar.NewProxyReader(in)
+
+		_, err = io.CopyN(out, barReader, limit)
+		if err != nil && !errors.Is(err, io.EOF) {
+			return err
+		}
+		bar.Finish()
+		return nil
+	}
 	err = out.Sync()
-	bar.Finish()
+
 	return nil
 }

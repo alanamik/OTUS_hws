@@ -35,7 +35,7 @@ func TestCopy(t *testing.T) {
 		require.NoError(t, err)
 		out, _ := os.ReadFile(fmt.Sprintf("%s/%s", tmp, "test1.txt"))
 		str := string(out)
-		require.Equal(t, str, "0")
+		require.Equal(t, "0", str)
 	})
 	t.Run("one symbol from in the end", func(t *testing.T) {
 		testFile, _ := os.Open("testdata/test.txt")
@@ -46,6 +46,6 @@ func TestCopy(t *testing.T) {
 		require.NoError(t, err)
 		out, _ := os.ReadFile(fmt.Sprintf("%s/%s", tmp, "test2.txt"))
 		str := string(out)
-		require.Equal(t, str, "9")
+		require.Equal(t, "9", str)
 	})
 }
