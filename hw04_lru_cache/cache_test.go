@@ -1,9 +1,6 @@
 package hw04lrucache
 
 import (
-	"math/rand"
-	"strconv"
-	"sync"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -48,14 +45,74 @@ func TestCache(t *testing.T) {
 		require.False(t, ok)
 		require.Nil(t, val)
 	})
+	t.Run("purge logic 1", func(t *testing.T) {
+		c := NewCache(3)
 
-	t.Run("purge logic", func(t *testing.T) {
-		// Write me
+		wasInCache := c.Set("a", 1)
+		require.False(t, wasInCache)
+
+		wasInCache = c.Set("b", 2)
+		require.False(t, wasInCache)
+
+		wasInCache = c.Set("c", 3)
+		require.False(t, wasInCache)
+
+		wasInCache = c.Set("d", 4)
+		require.False(t, wasInCache)
+
+		val, ok := c.Get("a")
+		require.False(t, ok)
+		require.Equal(t, nil, val)
 	})
-}
 
+	t.Run("purge logic 2", func(t *testing.T) {
+		c := NewCache(3)
+
+		wasInCache := c.Set("a", 1)
+		require.False(t, wasInCache)
+
+		wasInCache = c.Set("b", 2)
+		require.False(t, wasInCache)
+
+		wasInCache = c.Set("c", 3)
+		require.False(t, wasInCache)
+
+		c.Set("a", 10)
+
+		c.Set("c", 30)
+
+		wasInCache = c.Set("d", 4)
+		require.False(t, wasInCache)
+
+		val, ok := c.Get("b")
+		require.False(t, ok)
+		require.Equal(t, nil, val)
+	})
+
+	t.Run("clear cache", func(t *testing.T) {
+		c := NewCache(3)
+
+		wasInCache := c.Set("a", 1)
+		require.False(t, wasInCache)
+
+		wasInCache = c.Set("b", 2)
+		require.False(t, wasInCache)
+
+		wasInCache = c.Set("c", 3)
+		require.False(t, wasInCache)
+
+		wasInCache = c.Set("d", 4)
+		require.False(t, wasInCache)
+
+		wasInCache = c.Set("f", 5)
+		require.False(t, wasInCache)
+
+		c.Clear()
+		require.Equal(t, 0, c.Len())
+	})
+} /*
 func TestCacheMultithreading(t *testing.T) {
-	t.Skip() // Remove me if task with asterisk completed.
+	//t.Skip()//Remove me if task with asterisk completed.
 
 	c := NewCache(10)
 	wg := &sync.WaitGroup{}
@@ -77,3 +134,4 @@ func TestCacheMultithreading(t *testing.T) {
 
 	wg.Wait()
 }
+*/

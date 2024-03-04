@@ -14,7 +14,6 @@ func TestList(t *testing.T) {
 		require.Nil(t, l.Front())
 		require.Nil(t, l.Back())
 	})
-
 	t.Run("complex", func(t *testing.T) {
 		l := NewList()
 
@@ -47,5 +46,78 @@ func TestList(t *testing.T) {
 			elems = append(elems, i.Value.(int))
 		}
 		require.Equal(t, []int{70, 80, 60, 40, 10, 30, 50}, elems)
+	})
+	// added new tests
+	t.Run("back elem to front", func(t *testing.T) {
+		l := NewList()
+		l.PushBack(1)  // [1]
+		l.PushBack(2)  // [1, 2]
+		l.PushFront(0) // [0, 1, 2]
+
+		del := l.PushBack(1) // [0, 1, 2, 1]
+		l.MoveToFront(del)   // [1, 0, 1, 2]
+
+		elems := make([]int, 0, l.Len())
+		for i := l.Front(); i != nil; i = i.Next {
+			elems = append(elems, i.Value.(int))
+		}
+		require.Equal(t, []int{1, 0, 1, 2}, elems)
+		require.Equal(t, 4, l.Len())
+	})
+
+	t.Run("front elem to front", func(t *testing.T) {
+		l := NewList()
+		l.PushBack(1)  // [1]
+		l.PushBack(2)  // [1, 2]
+		l.PushFront(0) // [0, 1, 2]
+
+		del := l.PushFront(3) // [3, 0, 1, 2]
+		l.MoveToFront(del)    // [3, 0, 1, 2]
+
+		elems := make([]int, 0, l.Len())
+		for i := l.Front(); i != nil; i = i.Next {
+			elems = append(elems, i.Value.(int))
+		}
+		require.Equal(t, []int{3, 0, 1, 2}, elems)
+		require.Equal(t, 4, l.Len())
+	})
+
+	t.Run("remove elems", func(t *testing.T) {
+		l := NewList()
+		d3 := l.PushBack(1)  // [1]
+		d4 := l.PushBack(2)  // [1, 2]
+		d1 := l.PushFront(0) // [0, 1, 2]
+		d2 := l.PushFront(0) // [0, 0, 1, 2]
+		require.Equal(t, 4, l.Len())
+
+		elems := make([]int, 0, l.Len())
+		for i := l.Front(); i != nil; i = i.Next {
+			elems = append(elems, i.Value.(int))
+		}
+		require.Equal(t, []int{0, 0, 1, 2}, elems)
+
+		l.Remove(d1)
+		l.Remove(d2)
+		l.Remove(d4)
+		l.Remove(d3)
+		require.Equal(t, 0, l.Len())
+	})
+
+	t.Run("remove all elems", func(t *testing.T) {
+		l := NewList()
+		l.PushBack(1)  // [1]
+		l.PushBack(2)  // [1, 2]
+		l.PushFront(0) // [0, 1, 2]
+		l.PushFront(0) // [0, 0, 1, 2]
+		require.Equal(t, 4, l.Len())
+
+		l.RemoveAll()
+
+		elems := make([]int, 0, l.Len())
+		for i := l.Front(); i != nil; i = i.Next {
+			elems = append(elems, i.Value.(int))
+		}
+		require.Equal(t, []int{}, elems)
+		require.Equal(t, 0, l.Len())
 	})
 }

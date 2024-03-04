@@ -17,6 +17,10 @@ func init() {
 }
 
 func main() {
-	flag.Parse()
-	// Place your code here.
+	//	flag.Parse()
+	from := "testdata/input.txt"
+	to := "out.txt"
+	//limit:= 10
+	Copy(from, to, 0, 0)
+	//hw07_file_copying.Copy(from, to, offset, limit)
 }
