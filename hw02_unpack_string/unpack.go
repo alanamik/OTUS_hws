@@ -22,9 +22,12 @@ func Unpack(str string) (string, error) {
 		replaceStr = ""
 		if char == 48 { // если значение 0, то убираем предыдущий знак
 			s := sb.String()
-			s = s[:len(s)-1]
+			//	s = s - string(char)
+			//	s = s[:len(s)-1]
+			bef, aft, f := strings.Cut(s, (string(str[i-1]) + string(char)))
+			fmt.Println(bef, aft, f)
 			sb.Reset()
-			sb.WriteString(s)
+			sb.WriteString(bef)
 		}
 		if str[i] < 58 && str[i] > 48 {
 			if i+1 != len(str) && str[i+1] < 58 && str[i+1] > 47 {
