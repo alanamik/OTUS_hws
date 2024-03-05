@@ -2,7 +2,6 @@ package hw02unpackstring
 
 import (
 	"errors"
-	"fmt"
 	"strconv"
 	"strings"
 )
@@ -13,35 +12,39 @@ func Unpack(str string) (string, error) {
 	if str == "" || str == " " {
 		return "", nil
 	}
-	if rune(str[0]) < 58 && rune(str[0]) > 47 {
+	runes := []rune(str)
+	if runes[0] < 58 && runes[0] > 47 {
 		return "", ErrInvalidString
 	}
 	var sb strings.Builder
-	var replaceStr, replaceLit string
-	for i, char := range str {
+	var replaceStr string
+
+	for i, char := range runes {
 		replaceStr = ""
-		if char == 48 { // если значение 0, то убираем предыдущий знак
+		if char == 48 {
 			s := sb.String()
-			//	s = s - string(char)
-			//	s = s[:len(s)-1]
-			bef, aft, f := strings.Cut(s, (string(str[i-1]) + string(char)))
-			fmt.Println(bef, aft, f)
-			sb.Reset()
-			sb.WriteString(bef)
+			if runes[i-1] > 127 { // если предыдущая руна имеет другую кодировку
+				bef, _, _ := strings.Cut(s, string(runes[i-1]))
+				sb.Reset()
+				sb.WriteString(bef)
+			} else {
+				s = s[:len(s)-1]
+				sb.Reset()
+				sb.WriteString(s)
+			}
 		}
-		if str[i] < 58 && str[i] > 48 {
-			if i+1 != len(str) && str[i+1] < 58 && str[i+1] > 47 {
+		if char < 58 && char > 48 {
+			if i+1 != len(runes) && runes[i+1] < 58 && runes[i+1] > 47 {
 				return "", ErrInvalidString
 			}
 			count, _ := strconv.Atoi(string(char))
-			replaceStr = strings.Repeat(replaceLit, count-1)
+			replaceStr = strings.Repeat(string(runes[i-1]), count-1)
 		}
 		if replaceStr != "" {
 			sb.WriteString(replaceStr)
 		} else if char != 48 {
 			sb.WriteRune(char)
 		}
-		replaceLit = fmt.Sprintf("%c", char)
 	}
 
 	return sb.String(), nil
