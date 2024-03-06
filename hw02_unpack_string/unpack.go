@@ -9,7 +9,7 @@ import (
 var ErrInvalidString = errors.New("invalid string")
 
 func Unpack(str string) (string, error) {
-	if len(str) <= 1 {
+	if str == "" || str == " " {
 		return "", nil
 	}
 	runes := []rune(str)
@@ -18,21 +18,22 @@ func Unpack(str string) (string, error) {
 	}
 	var sb strings.Builder
 	var replaceStr string
+
 	for i, char := range runes {
 		replaceStr = ""
-		if i+1 != len(runes) && runes[i+1] == 48 {
-			replaceStr = "no"
+		if char == 48 || (i+1 != len(runes) && runes[i+1] == 48) {
+			replaceStr = "n"
 		}
-		if i+1 != len(runes) && runes[i+1] < 58 && runes[i+1] > 48 {
-			if i+2 != len(runes) && runes[i+2] < 58 && runes[i+2] > 47 {
+		if char < 58 && char > 48 {
+			if i+1 != len(runes) && runes[i+1] < 58 && runes[i+1] > 47 {
 				return "", ErrInvalidString
 			}
-			count, _ := strconv.Atoi(string(runes[i+1]))
-			replaceStr = strings.Repeat(string(char), count)
+			count, _ := strconv.Atoi(string(char))
+			replaceStr = strings.Repeat(string(runes[i-1]), count-1)
 			sb.WriteString(replaceStr)
 		}
-		if replaceStr == "" && (char < 48 || char >= 58) {
-			_, _ = sb.WriteRune(char)
+		if replaceStr == "" {
+			sb.WriteRune(char)
 		}
 	}
 	return sb.String(), nil
