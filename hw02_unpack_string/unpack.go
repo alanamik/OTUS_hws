@@ -4,16 +4,17 @@ import (
 	"errors"
 	"strconv"
 	"strings"
+	"unicode"
 )
 
 var ErrInvalidString = errors.New("invalid string")
 
 func Unpack(str string) (string, error) {
-	if str == "" || str == " " {
+	if len(str) <= 1 {
 		return "", nil
 	}
 	runes := []rune(str)
-	if runes[0] < 58 && runes[0] > 47 {
+	if unicode.IsDigit(runes[0]) {
 		return "", ErrInvalidString
 	}
 	var sb strings.Builder
@@ -21,18 +22,21 @@ func Unpack(str string) (string, error) {
 
 	for i, char := range runes {
 		replaceStr = ""
-		if char == 48 || (i+1 != len(runes) && runes[i+1] == 48) {
-			replaceStr = "n"
-		}
-		if char < 58 && char > 48 {
-			if i+1 != len(runes) && runes[i+1] < 58 && runes[i+1] > 47 {
+		if unicode.IsDigit(char) {
+			if i+1 != len(runes) && unicode.IsDigit(runes[i+1]) {
 				return "", ErrInvalidString
 			}
 			count, _ := strconv.Atoi(string(char))
-			replaceStr = strings.Repeat(string(runes[i-1]), count-1)
-			sb.WriteString(replaceStr)
-		}
-		if replaceStr == "" {
+			if count != 0 {
+				replaceStr = strings.Repeat(string(runes[i-1]), count-1)
+				sb.WriteString(replaceStr)
+			} else {
+				s := sb.String()
+				bef, _ := strings.CutSuffix(s, string(runes[i-1]))
+				sb.Reset()
+				sb.WriteString(bef)
+			}
+		} else {
 			sb.WriteRune(char)
 		}
 	}
