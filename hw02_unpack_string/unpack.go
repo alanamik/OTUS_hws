@@ -9,7 +9,7 @@ import (
 var ErrInvalidString = errors.New("invalid string")
 
 func Unpack(str string) (string, error) {
-	if str == "" || str == " " {
+	if len(str) <= 1 {
 		return "", nil
 	}
 	runes := []rune(str)
@@ -18,34 +18,22 @@ func Unpack(str string) (string, error) {
 	}
 	var sb strings.Builder
 	var replaceStr string
-
 	for i, char := range runes {
 		replaceStr = ""
-		if char == 48 {
-			s := sb.String()
-			if runes[i-1] > 127 { // если предыдущая руна имеет другую кодировку
-				bef, _, _ := strings.Cut(s, string(runes[i-1]))
-				sb.Reset()
-				sb.WriteString(bef)
-			} else {
-				s = s[:len(s)-1]
-				sb.Reset()
-				sb.WriteString(s)
-			}
+		if i+1 != len(runes) && runes[i+1] == 48 {
+			replaceStr = "no"
 		}
-		if char < 58 && char > 48 {
-			if i+1 != len(runes) && runes[i+1] < 58 && runes[i+1] > 47 {
+		if i+1 != len(runes) && runes[i+1] < 58 && runes[i+1] > 48 {
+			if i+2 != len(runes) && runes[i+2] < 58 && runes[i+2] > 47 {
 				return "", ErrInvalidString
 			}
-			count, _ := strconv.Atoi(string(char))
-			replaceStr = strings.Repeat(string(runes[i-1]), count-1)
-		}
-		if replaceStr != "" {
+			count, _ := strconv.Atoi(string(runes[i+1]))
+			replaceStr = strings.Repeat(string(char), count)
 			sb.WriteString(replaceStr)
-		} else if char != 48 {
-			sb.WriteRune(char)
+		}
+		if replaceStr == "" && (char < 48 || char >= 58) {
+			_, _ = sb.WriteRune(char)
 		}
 	}
-
 	return sb.String(), nil
 }

@@ -19,6 +19,7 @@ func TestUnpack(t *testing.T) {
 		// new cases
 		{input: "aa0b2", expected: "abb"}, // кейс на цифру в конце строки
 		{input: "aaФ2", expected: "aaФФ"}, // кейсы на другую кодировку
+		{input: "aaФ0", expected: "aa"},
 		{input: "aaФ2ы4", expected: "aaФФыыыы"},
 		{input: "aaaф0sы0", expected: "aaas"},
 		// uncomment if task with asterisk completed
