@@ -21,7 +21,6 @@ func Unpack(str string) (string, error) {
 	var replaceStr string
 
 	for i, char := range runes {
-		replaceStr = ""
 		if unicode.IsDigit(char) {
 			if i+1 != len(runes) && unicode.IsDigit(runes[i+1]) {
 				return "", ErrInvalidString
